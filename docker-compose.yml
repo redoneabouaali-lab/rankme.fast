@@ -374,7 +374,7 @@ services:
     networks: [rankme]
     depends_on:
       api:
-        condition: service_healthy
+        condition: service_started
       mongo:
         condition: service_healthy
       redis:
@@ -648,7 +648,7 @@ services:
     networks: [rankme]
     depends_on:
       api:
-        condition: service_healthy
+        condition: service_started
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       WEB_PORT: 3000
