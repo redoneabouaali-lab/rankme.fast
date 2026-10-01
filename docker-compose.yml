@@ -76,24 +76,6 @@ services:
 
   api:
     init: true
-    command:
-      - sh
-      - -c
-      - |
-        node dist/server.cjs > /tmp/api-boot.log 2>&1 &
-        pid=$!
-        i=0
-        while [ $i -lt 90 ] && kill -0 $pid 2>/dev/null; do
-          sleep 1
-          i=$((i+1))
-        done
-        if node -e 'const h=require("http");const r=h.get("http://127.0.0.1:8080/api/health",()=>process.exit(0));r.on("error",()=>process.exit(1));setTimeout(()=>process.exit(1),3000)' 2>/dev/null; then
-          echo "APIDEBUG real api is serving on 8080 (healthy); blocking to keep container up" >> /tmp/api-boot.log
-          wait $pid 2>/dev/null || true
-        else
-          echo "APIDEBUG api NOT serving on 8080 after ${i}s; serving boot log via HTTP for diagnosis" >> /tmp/api-boot.log
-          node -e 'const fs=require("fs"),h=require("http");h.createServer((q,s)=>{let b="(no log)";try{b=fs.readFileSync("/tmp/api-boot.log","utf8")}catch(e){b="log read error: "+e.message}s.writeHead(200,{"content-type":"text/plain; charset=utf-8"});s.end(b)}).listen(8080,"0.0.0.0",()=>console.log("APIDEBUG log server on 8080"))'
-        fi
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -101,7 +83,7 @@ services:
         APP_BUILD_SHA: ${APP_BUILD_SHA:-dev}
     restart: unless-stopped
     logging: *default-logging
-    mem_limit: 1536m
+    mem_limit: 768m
     networks: [rankme]
     depends_on:
       mongo:
@@ -113,7 +95,6 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       ALLOW_FAKE_PROVIDERS: ${ALLOW_FAKE_PROVIDERS:-false}
-      NODE_OPTIONS: --max-old-space-size=768
       # Fixed internal listen port. The host-side mapping is API_PORT below;
       # keep this at 8080 so the port mapping and web's API_INTERNAL_URL agree.
       PORT: 8080
