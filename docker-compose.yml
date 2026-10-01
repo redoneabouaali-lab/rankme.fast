@@ -94,7 +94,7 @@ services:
         APP_BUILD_SHA: ${APP_BUILD_SHA:-dev}
     restart: unless-stopped
     logging: *default-logging
-    mem_limit: 768m
+    mem_limit: 1536m
     networks: [rankme]
     depends_on:
       mongo:
@@ -106,6 +106,7 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       ALLOW_FAKE_PROVIDERS: ${ALLOW_FAKE_PROVIDERS:-false}
+      NODE_OPTIONS: --max-old-space-size=768
       # Fixed internal listen port. The host-side mapping is API_PORT below;
       # keep this at 8080 so the port mapping and web's API_INTERNAL_URL agree.
       PORT: 8080
