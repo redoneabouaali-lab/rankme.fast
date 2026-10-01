@@ -5,7 +5,7 @@ FROM node:20-bookworm-slim AS build
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci --include=dev
 
 COPY tsconfig.json tsup.config.ts ./
 COPY src ./src
