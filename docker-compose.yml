@@ -76,6 +76,10 @@ services:
 
   api:
     init: true
+    command:
+      - sh
+      - -c
+      - node dist/server.cjs; ec=$?; echo "API_PROCESS_EXITED_CODE=$ec"; sleep 600
     build:
       context: ./server
       dockerfile: Dockerfile
